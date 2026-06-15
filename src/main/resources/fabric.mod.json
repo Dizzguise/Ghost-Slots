@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "ghostslots",
+  "version": "${version}",
+  "name": "Ghost Slots",
+  "description": "Your inventory remembers where things belong.",
+  "authors": [
+    "Ghost Slots contributors"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.ghostslots.GhostSlotsClient"
+    ]
+  },
+  "mixins": [
+    "ghostslots.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  }
+}
