@@ -26,6 +26,14 @@ Middle-click is not used.
 - Shift-left-clicking from a container routes a matching stack into an empty ghost slot before vanilla quick-move behavior.
 - No full inventory sorting, wireless restock, or broad category matching is included.
 
+Installation
+
+1. Install Fabric Loader for Minecraft 1.21.11.
+2. Download ghost-slots-0.2.4.jar.
+3. Place it in .minecraft/mods.
+4. Launch the Fabric profile.
+5. No server install required.
+
 ## Configuration
 
 The mod writes config files under `.minecraft/config/`:
