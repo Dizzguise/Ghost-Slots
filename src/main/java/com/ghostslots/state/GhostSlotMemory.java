@@ -33,7 +33,7 @@ public final class GhostSlotMemory {
     }
 
     public boolean isGhostableInventoryIndex(int inventoryIndex) {
-        return inventoryIndex >= 0 && inventoryIndex < 9;
+        return inventoryIndex >= 0 && inventoryIndex <= 40;
     }
 
     public boolean hasGhost(int inventoryIndex) {
@@ -66,13 +66,6 @@ public final class GhostSlotMemory {
 
     public void clearGhost(int inventoryIndex) {
         ghosts.remove(inventoryIndex);
-        save();
-    }
-
-    public void clearHotbar() {
-        for (int i = 0; i < 9; i++) {
-            ghosts.remove(i);
-        }
         save();
     }
 

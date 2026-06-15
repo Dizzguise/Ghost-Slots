@@ -30,7 +30,7 @@ import java.util.OptionalInt;
 
 @Mixin(HandledScreen.class)
 public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen {
-    private static final int BUTTON_W = 48;
+    private static final int BUTTON_W = 64;
     private static final int BUTTON_H = 14;
     private static final int BUTTON_GAP = 3;
 
@@ -63,7 +63,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     private void ghostslots$keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
-        if (!GhostSlotsClient.config().enabled || client == null || focusedSlot == null) {
+        if (client == null || focusedSlot == null) {
             return;
         }
 
@@ -96,10 +96,6 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
 
-        if (!GhostSlotsClient.config().enabled) {
-            return;
-        }
-
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
             cir.setReturnValue(true);
             return;
@@ -126,7 +122,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
     private void ghostslots$mouseDragged(Click click, double deltaX, double deltaY, CallbackInfoReturnable<Boolean> cir) {
-        if (GhostSlotsClient.config().enabled && click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
+        if (click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
             cir.setReturnValue(true);
         }
     }
@@ -159,7 +155,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
             int slotX = x + slot.x;
             int slotY = y + slot.y;
-            int border = GhostSlotsClient.config().enabled ? 0xCC48E58D : 0xCC7E8A91;
+            int border = 0xCC48E58D;
             context.fill(slotX - 1, slotY - 1, slotX + 17, slotY, border);
             context.fill(slotX - 1, slotY + 16, slotX + 17, slotY + 17, border);
             context.fill(slotX - 1, slotY - 1, slotX, slotY + 17, border);
@@ -176,7 +172,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
     private boolean routeCursorStack() {
         ItemStack cursor = handler.getCursorStack();
-        if (!GhostSlotsClient.config().enabled || cursor.isEmpty()) {
+        if (cursor.isEmpty()) {
             return false;
         }
 
@@ -190,7 +186,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     private boolean routeShiftClickedStack() {
-        if (!GhostSlotsClient.config().enabled || focusedSlot == null || !focusedSlot.hasStack()) {
+        if (focusedSlot == null || !focusedSlot.hasStack()) {
             return false;
         }
         if (InventorySlotMap.playerInventoryIndex(client, focusedSlot).isPresent()) {
@@ -251,8 +247,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     private void renderButtons(DrawContext context, int mouseX, int mouseY) {
-        renderButton(context, mouseX, mouseY, 0, GhostSlotsClient.config().enabled ? Text.translatable("text.ghostslots.on") : Text.translatable("text.ghostslots.off"));
-        renderButton(context, mouseX, mouseY, 1, Text.translatable("text.ghostslots.unlock"));
+        renderButton(context, mouseX, mouseY, 0, Text.translatable("text.ghostslots.unlock_all"));
     }
 
     private void renderButton(DrawContext context, int mouseX, int mouseY, int index, Text label) {
@@ -274,17 +269,12 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (index < 0) {
             return false;
         }
-        if (index == 0) {
-            GhostSlotsClient.config().enabled = !GhostSlotsClient.config().enabled;
-            GhostSlotsClient.config().save();
-        } else {
-            GhostSlotsClient.memory().clearHotbar();
-        }
+        GhostSlotsClient.memory().clearAll();
         return true;
     }
 
     private int hoveredButton(double mouseX, double mouseY) {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
             int left = buttonLeft(i);
             int top = buttonTop();
             if (mouseX >= left && mouseX < left + BUTTON_W && mouseY >= top && mouseY < top + BUTTON_H) {
@@ -295,7 +285,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     private int buttonLeft(int index) {
-        return x + backgroundWidth - (BUTTON_W * 2 + BUTTON_GAP) + index * (BUTTON_W + BUTTON_GAP);
+        return x + backgroundWidth - BUTTON_W + index * (BUTTON_W + BUTTON_GAP);
     }
 
     private int buttonTop() {

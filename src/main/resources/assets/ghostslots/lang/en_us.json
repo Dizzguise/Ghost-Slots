@@ -1,8 +1,6 @@
 {
   "key.ghostslots.assign": "Assign Ghost Slot",
   "key.ghostslots.clear": "Clear Ghost Slot",
-  "text.ghostslots.unlock": "Unlock",
-  "text.ghostslots.on": "On",
-  "text.ghostslots.off": "Off",
+  "text.ghostslots.unlock_all": "Unlock All",
   "text.ghostslots.gear_fallback": "Gear Fallback"
 }

@@ -14,7 +14,6 @@ public final class GhostSlotsConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("ghostslots.json");
 
-    public boolean enabled = true;
     public boolean gearFallback = false;
     public boolean axeWeaponFallback = false;
 

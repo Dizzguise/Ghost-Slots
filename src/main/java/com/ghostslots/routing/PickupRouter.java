@@ -15,9 +15,6 @@ public final class PickupRouter {
     }
 
     public static void routePlayerInventory(MinecraftClient client) {
-        if (!GhostSlotsClient.config().enabled) {
-            return;
-        }
         if (client.player == null || client.interactionManager == null || client.currentScreen != null) {
             return;
         }
@@ -27,7 +24,7 @@ public final class PickupRouter {
         }
 
         PlayerInventory inventory = client.player.getInventory();
-        if (evictMismatchedLockedHotbar(client, inventory)) {
+        if (evictMismatchedLockedSlots(client, inventory)) {
             cooldownTicks = 2;
             return;
         }
@@ -54,7 +51,7 @@ public final class PickupRouter {
         }
     }
 
-    private static boolean evictMismatchedLockedHotbar(MinecraftClient client, PlayerInventory inventory) {
+    private static boolean evictMismatchedLockedSlots(MinecraftClient client, PlayerInventory inventory) {
         for (var entry : GhostSlotsClient.memory().entries()) {
             int sourceIndex = entry.getKey();
             if (!GhostSlotsClient.memory().isGhostableInventoryIndex(sourceIndex)) {
@@ -71,7 +68,7 @@ public final class PickupRouter {
                 continue;
             }
 
-            int targetIndex = findEmptyMainInventorySlot(inventory);
+            int targetIndex = findEmptyUnlockedInventorySlot(inventory);
             if (targetIndex < 0) {
                 return false;
             }
@@ -83,7 +80,7 @@ public final class PickupRouter {
     }
 
     private static int findSourceIndex(PlayerInventory inventory, int targetIndex, ItemStack ghost) {
-        for (int sourceIndex = 0; sourceIndex < 36; sourceIndex++) {
+        for (int sourceIndex = 0; sourceIndex <= 40; sourceIndex++) {
             if (sourceIndex == targetIndex) {
                 continue;
             }
@@ -102,9 +99,9 @@ public final class PickupRouter {
         return -1;
     }
 
-    private static int findEmptyMainInventorySlot(PlayerInventory inventory) {
-        for (int index = 9; index < 36; index++) {
-            if (inventory.getStack(index).isEmpty()) {
+    private static int findEmptyUnlockedInventorySlot(PlayerInventory inventory) {
+        for (int index = 0; index < 36; index++) {
+            if (inventory.getStack(index).isEmpty() && !GhostSlotsClient.memory().hasGhost(index)) {
                 return index;
             }
         }
@@ -124,6 +121,18 @@ public final class PickupRouter {
     }
 
     private static int playerHandlerSlotId(int inventoryIndex) {
-        return inventoryIndex < 9 ? 36 + inventoryIndex : inventoryIndex;
+        if (inventoryIndex < 9) {
+            return 36 + inventoryIndex;
+        }
+        if (inventoryIndex < 36) {
+            return inventoryIndex;
+        }
+        if (inventoryIndex < 40) {
+            return 44 - inventoryIndex;
+        }
+        if (inventoryIndex == 40) {
+            return 45;
+        }
+        return inventoryIndex;
     }
 }

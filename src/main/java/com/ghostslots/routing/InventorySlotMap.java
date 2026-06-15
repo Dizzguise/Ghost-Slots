@@ -20,7 +20,7 @@ public final class InventorySlotMap {
             return OptionalInt.empty();
         }
         int index = slot.getIndex();
-        return index >= 0 && index < 36 ? OptionalInt.of(index) : OptionalInt.empty();
+        return index >= 0 && index <= 40 ? OptionalInt.of(index) : OptionalInt.empty();
     }
 
     public static Slot findPlayerSlot(ScreenHandler handler, MinecraftClient client, int inventoryIndex) {
