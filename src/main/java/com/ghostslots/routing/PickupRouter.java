@@ -27,6 +27,11 @@ public final class PickupRouter {
         }
 
         PlayerInventory inventory = client.player.getInventory();
+        if (evictMismatchedLockedHotbar(client, inventory)) {
+            cooldownTicks = 2;
+            return;
+        }
+
         for (var entry : GhostSlotsClient.memory().entries()) {
             int targetIndex = entry.getKey();
             if (!GhostSlotsClient.memory().isGhostableInventoryIndex(targetIndex) || !inventory.getStack(targetIndex).isEmpty()) {
@@ -49,6 +54,34 @@ public final class PickupRouter {
         }
     }
 
+    private static boolean evictMismatchedLockedHotbar(MinecraftClient client, PlayerInventory inventory) {
+        for (var entry : GhostSlotsClient.memory().entries()) {
+            int sourceIndex = entry.getKey();
+            if (!GhostSlotsClient.memory().isGhostableInventoryIndex(sourceIndex)) {
+                continue;
+            }
+
+            ItemStack stack = inventory.getStack(sourceIndex);
+            if (stack.isEmpty()) {
+                continue;
+            }
+
+            Optional<ItemStack> ghost = GhostSlotsClient.memory().getGhost(sourceIndex);
+            if (ghost.isEmpty() || GhostMatcher.matches(ghost.get(), stack, GhostSlotsClient.config())) {
+                continue;
+            }
+
+            int targetIndex = findEmptyMainInventorySlot(inventory);
+            if (targetIndex < 0) {
+                return false;
+            }
+
+            moveStack(client, sourceIndex, targetIndex);
+            return true;
+        }
+        return false;
+    }
+
     private static int findSourceIndex(PlayerInventory inventory, int targetIndex, ItemStack ghost) {
         for (int sourceIndex = 0; sourceIndex < 36; sourceIndex++) {
             if (sourceIndex == targetIndex) {
@@ -65,6 +98,15 @@ public final class PickupRouter {
                 continue;
             }
             return sourceIndex;
+        }
+        return -1;
+    }
+
+    private static int findEmptyMainInventorySlot(PlayerInventory inventory) {
+        for (int index = 9; index < 36; index++) {
+            if (inventory.getStack(index).isEmpty()) {
+                return index;
+            }
         }
         return -1;
     }

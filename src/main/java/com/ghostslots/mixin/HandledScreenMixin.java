@@ -109,6 +109,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
 
+        if (blocksLockedSlotPlacement()) {
+            cir.setReturnValue(true);
+            return;
+        }
+
         if (shiftHeldDown() && routeShiftClickedStack()) {
             cir.setReturnValue(true);
             return;
@@ -124,6 +129,20 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         if (GhostSlotsClient.config().enabled && click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
             cir.setReturnValue(true);
         }
+    }
+
+    private boolean blocksLockedSlotPlacement() {
+        if (focusedSlot == null || handler.getCursorStack().isEmpty()) {
+            return false;
+        }
+
+        OptionalInt inventoryIndex = InventorySlotMap.playerInventoryIndex(client, focusedSlot);
+        if (inventoryIndex.isEmpty()) {
+            return false;
+        }
+
+        Optional<ItemStack> ghost = GhostSlotsClient.memory().getGhost(inventoryIndex.getAsInt());
+        return ghost.isPresent() && !GhostMatcher.matches(ghost.get(), handler.getCursorStack(), GhostSlotsClient.config());
     }
 
     private void renderLocks(DrawContext context) {

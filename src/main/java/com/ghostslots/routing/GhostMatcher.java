@@ -45,7 +45,7 @@ public final class GhostMatcher {
         if (ghost.isEmpty() || candidate.isEmpty()) {
             return false;
         }
-        if (exactMatch(ghost, candidate)) {
+        if (ItemStack.areItemsEqual(ghost, candidate)) {
             return true;
         }
         if (!config.gearFallback || !isGearGhost(ghost, config)) {

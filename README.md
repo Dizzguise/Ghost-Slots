@@ -21,7 +21,9 @@ Middle-click is not used.
 - Main inventory slots are never remembered.
 - Empty locked slots render a dim saved-item ghost image.
 - Occupied locked slots render a small lock marker and border.
-- Picked-up items that vanilla placed elsewhere in the player inventory are recovered into empty matching ghost slots while no screen is open.
+- Picked-up items that vanilla placed in a locked hotbar slot are moved out unless they match the saved item ID.
+- Picked-up items that vanilla placed elsewhere in the player inventory are recovered into empty matching hotbar slots while no screen is open.
+- Manual placement of the wrong item ID into a locked hotbar slot is blocked while the inventory screen is open.
 - Left-clicking while carrying a matching stack routes it into an empty matching ghost slot first.
 - Shift-left-clicking from a container routes a matching stack into an empty ghost slot before vanilla quick-move behavior.
 - No full inventory sorting, wireless restock, or broad category matching is included.
@@ -63,5 +65,5 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.2.1.jar
+build/libs/ghost-slots-0.2.2.jar
 ```
