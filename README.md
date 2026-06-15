@@ -4,19 +4,31 @@ Your inventory remembers where things belong.
 
 Ghost Slots is a small Fabric client mod for Minecraft 1.21.11. It focuses on inventory slot memory rather than sorting: assigned slots remember the item that belongs there, show a lock/ghost visual, and try to receive matching stacks before vanilla inventory movement.
 
+## Install Options
+
+- `ghost-slots-0.2.5-pvp-safe.jar`: default recommended build. Supports hotbar, main inventory, and armor locks. Offhand locking is disabled, so totems are never auto-refilled.
+- `ghost-slots-0.2.5-full-offhand.jar`: full build. Supports hotbar, main inventory, armor, and offhand locks. This can auto-refill totems if a totem is locked in offhand.
+
+Install only one Ghost Slots jar at a time.
+
+Checked-in install jars are under `release-jars/1.21.11/`.
+
 ## MVP Controls
 
-- Hover a player inventory, armor, or offhand slot and press `G` to lock that slot to its current stack.
-- Carry a stack, hover an empty player inventory, armor, or offhand slot, and press `G` to lock that carried stack to the slot.
+- Hover a player inventory or armor slot and press `G` to lock that slot to its current stack.
+- Carry a stack, hover an empty player inventory or armor slot, and press `G` to lock that carried stack to the slot.
 - Hover a locked slot and press `X` to unlock one slot.
 - Hold `X` and drag with left mouse across slots to unlock multiple slots.
 - Use the inventory overlay `Unlock All` button to clear every lock.
+
+The full-offhand build also allows the same controls on the offhand slot.
 
 Middle-click is not used.
 
 ## Behavior
 
-- Inventory, armor, and offhand locking are enabled by default.
+- Inventory and armor locking are enabled by default.
+- Offhand locking is only available in the full-offhand build.
 - Empty locked slots render a dim saved-item ghost image.
 - Occupied locked slots render a small lock marker and border.
 - Picked-up items that vanilla placed in a locked slot are moved out unless they match the saved item ID.
@@ -62,5 +74,11 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.2.4.jar
+build/libs/ghost-slots-0.2.5-pvp-safe.jar
+```
+
+Build the full offhand variant with:
+
+```powershell
+.\gradlew.bat clean build '-Pghostslots.allowOffhand=true' '-Pghostslots.variant=full-offhand'
 ```

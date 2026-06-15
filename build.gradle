@@ -6,8 +6,22 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
+def allowOffhandLocking = providers.gradleProperty("ghostslots.allowOffhand")
+        .map { it.toBoolean() }
+        .orElse(false)
+def ghostSlotsVariant = providers.gradleProperty("ghostslots.variant")
+        .orElse(allowOffhandLocking.get() ? "full-offhand" : "pvp-safe")
+
 base {
     archivesName = project.archives_base_name
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir layout.buildDirectory.dir("generated/sources/ghostslots/java")
+        }
+    }
 }
 
 dependencies {
@@ -28,14 +42,49 @@ tasks.withType(JavaCompile).configureEach {
     it.options.release = 21
 }
 
+tasks.register("generateGhostSlotsBuildOptions") {
+    def outputDir = layout.buildDirectory.dir("generated/sources/ghostslots/java/com/ghostslots")
+    inputs.property("allowOffhandLocking", allowOffhandLocking)
+    outputs.dir(outputDir)
+
+    doLast {
+        def dir = outputDir.get().asFile
+        dir.mkdirs()
+        new File(dir, "GhostSlotsBuildOptions.java").text = """package com.ghostslots;
+
+public final class GhostSlotsBuildOptions {
+    public static final boolean ALLOW_OFFHAND_LOCKING = ${allowOffhandLocking.get()};
+    public static final String VARIANT = "${ghostSlotsVariant.get()}";
+
+    private GhostSlotsBuildOptions() {
+    }
+}
+"""
+    }
+}
+
+compileJava {
+    dependsOn tasks.named("generateGhostSlotsBuildOptions")
+}
+
 java {
     withSourcesJar()
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
 
+tasks.named("sourcesJar") {
+    dependsOn tasks.named("generateGhostSlotsBuildOptions")
+}
+
 jar {
+    archiveClassifier.set(ghostSlotsVariant.map { "dev-${it}" })
+
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
     }
+}
+
+remapJar {
+    archiveClassifier.set(ghostSlotsVariant)
 }

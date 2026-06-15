@@ -1,6 +1,7 @@
 package com.ghostslots.routing;
 
 import com.ghostslots.GhostSlotsClient;
+import com.ghostslots.GhostSlotsBuildOptions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -80,7 +81,8 @@ public final class PickupRouter {
     }
 
     private static int findSourceIndex(PlayerInventory inventory, int targetIndex, ItemStack ghost) {
-        for (int sourceIndex = 0; sourceIndex <= 40; sourceIndex++) {
+        int lastSourceIndex = GhostSlotsBuildOptions.ALLOW_OFFHAND_LOCKING ? 40 : 39;
+        for (int sourceIndex = 0; sourceIndex <= lastSourceIndex; sourceIndex++) {
             if (sourceIndex == targetIndex) {
                 continue;
             }

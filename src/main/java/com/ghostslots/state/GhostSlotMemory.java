@@ -1,5 +1,6 @@
 package com.ghostslots.state;
 
+import com.ghostslots.GhostSlotsBuildOptions;
 import com.ghostslots.config.GhostSlotsConfig;
 import com.mojang.serialization.DataResult;
 import com.google.gson.Gson;
@@ -33,7 +34,10 @@ public final class GhostSlotMemory {
     }
 
     public boolean isGhostableInventoryIndex(int inventoryIndex) {
-        return inventoryIndex >= 0 && inventoryIndex <= 40;
+        if (inventoryIndex >= 0 && inventoryIndex < 40) {
+            return true;
+        }
+        return inventoryIndex == 40 && GhostSlotsBuildOptions.ALLOW_OFFHAND_LOCKING;
     }
 
     public boolean hasGhost(int inventoryIndex) {
