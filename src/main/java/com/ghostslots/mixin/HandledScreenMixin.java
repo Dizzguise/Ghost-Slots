@@ -3,10 +3,12 @@ package com.ghostslots.mixin;
 import com.ghostslots.GhostSlotsClient;
 import com.ghostslots.routing.GhostMatcher;
 import com.ghostslots.routing.InventorySlotMap;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -60,7 +62,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void ghostslots$keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void ghostslots$keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> cir) {
         if (client == null || focusedSlot == null) {
             return;
         }
@@ -70,25 +72,26 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
 
-        if (keyCode == GLFW.GLFW_KEY_G) {
+        if (input.key() == GLFW.GLFW_KEY_G) {
             ItemStack source = focusedSlot.hasStack() ? focusedSlot.getStack() : handler.getCursorStack();
             if (!source.isEmpty()) {
                 GhostSlotsClient.memory().setGhost(inventoryIndex.getAsInt(), source);
                 cir.setReturnValue(true);
             }
-        } else if (keyCode == GLFW.GLFW_KEY_X) {
+        } else if (input.key() == GLFW.GLFW_KEY_X) {
             GhostSlotsClient.memory().clearGhost(inventoryIndex.getAsInt());
             cir.setReturnValue(true);
         }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void ghostslots$mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+    private void ghostslots$mouseClicked(Click click, boolean doubleClick, CallbackInfoReturnable<Boolean> cir) {
         if (client == null || client.player == null || client.interactionManager == null) {
             return;
         }
 
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && handleClearButton(mouseX, mouseY)) {
+        int button = click.button();
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && handleClearButton(click.x(), click.y())) {
             cir.setReturnValue(true);
             return;
         }
@@ -113,8 +116,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
-    private void ghostslots$mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY, CallbackInfoReturnable<Boolean> cir) {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
+    private void ghostslots$mouseDragged(Click click, double deltaX, double deltaY, CallbackInfoReturnable<Boolean> cir) {
+        if (click.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT && clearHeldDown() && clearHoveredGhost()) {
             cir.setReturnValue(true);
         }
     }
