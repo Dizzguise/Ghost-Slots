@@ -55,8 +55,8 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         super(title);
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
-    private void ghostslots$render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "renderMain", at = @At("TAIL"))
+    private void ghostslots$renderMain(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         renderLocks(context);
         renderButtons(context, mouseX, mouseY);
     }

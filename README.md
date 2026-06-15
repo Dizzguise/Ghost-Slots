@@ -65,5 +65,5 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.2.2.jar
+build/libs/ghost-slots-0.2.3.jar
 ```
