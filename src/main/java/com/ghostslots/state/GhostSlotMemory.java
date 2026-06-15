@@ -17,7 +17,6 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,10 +33,7 @@ public final class GhostSlotMemory {
     }
 
     public boolean isGhostableInventoryIndex(int inventoryIndex) {
-        if (inventoryIndex >= 0 && inventoryIndex < 9) {
-            return true;
-        }
-        return config.fullInventoryGhosting && inventoryIndex >= 9 && inventoryIndex < 36;
+        return inventoryIndex >= 0 && inventoryIndex < 9;
     }
 
     public boolean hasGhost(int inventoryIndex) {
@@ -80,17 +76,6 @@ public final class GhostSlotMemory {
         save();
     }
 
-    public void clearMainInventory() {
-        Iterator<Integer> iterator = ghosts.keySet().iterator();
-        while (iterator.hasNext()) {
-            int index = iterator.next();
-            if (index >= 9 && index < 36) {
-                iterator.remove();
-            }
-        }
-        save();
-    }
-
     public void clearAll() {
         ghosts.clear();
         save();
@@ -112,12 +97,14 @@ public final class GhostSlotMemory {
             for (Map.Entry<String, String> entry : store.ghosts.entrySet()) {
                 int index = Integer.parseInt(entry.getKey());
                 NbtCompound nbt = StringNbtReader.readCompound(entry.getValue());
-                if (index >= 0 && index < 36 && ItemStack.CODEC.parse(NbtOps.INSTANCE, nbt.copy()).result().filter(stack -> !stack.isEmpty()).isPresent()) {
+                if (isGhostableInventoryIndex(index) && ItemStack.CODEC.parse(NbtOps.INSTANCE, nbt.copy()).result().filter(stack -> !stack.isEmpty()).isPresent()) {
                     ghosts.put(index, nbt);
                 }
             }
         } catch (Exception ignored) {
         }
+        ghosts.keySet().removeIf(index -> !isGhostableInventoryIndex(index));
+        save();
     }
 
     private void save() {

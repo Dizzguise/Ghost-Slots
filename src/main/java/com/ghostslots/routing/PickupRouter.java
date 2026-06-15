@@ -15,6 +15,9 @@ public final class PickupRouter {
     }
 
     public static void routePlayerInventory(MinecraftClient client) {
+        if (!GhostSlotsClient.config().enabled) {
+            return;
+        }
         if (client.player == null || client.interactionManager == null || client.currentScreen != null) {
             return;
         }
