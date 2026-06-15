@@ -3,7 +3,6 @@ package com.ghostslots.mixin;
 import com.ghostslots.GhostSlotsClient;
 import com.ghostslots.routing.GhostMatcher;
 import com.ghostslots.routing.InventorySlotMap;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -103,7 +102,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
             return;
         }
 
-        if (hasShiftDown() && routeShiftClickedStack()) {
+        if (shiftHeldDown() && routeShiftClickedStack()) {
             cir.setReturnValue(true);
             return;
         }
@@ -134,10 +133,7 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
 
             int slotX = x + slot.x;
             int slotY = y + slot.y;
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.35F);
             context.drawItem(ghost.get(), slotX, slotY);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             context.fill(slotX, slotY, slotX + 16, slotY + 16, 0x66000000);
         }
     }
@@ -209,7 +205,13 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
     }
 
     private boolean clearHeldDown() {
-        return client != null && InputUtil.isKeyPressed(client.getWindow().getHandle(), GLFW.GLFW_KEY_X);
+        return client != null && InputUtil.isKeyPressed(client.getWindow(), GLFW.GLFW_KEY_X);
+    }
+
+    private boolean shiftHeldDown() {
+        return client != null
+                && (InputUtil.isKeyPressed(client.getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
+                || InputUtil.isKeyPressed(client.getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT));
     }
 
     private void renderClearButtons(DrawContext context, int mouseX, int mouseY) {
@@ -223,7 +225,11 @@ public abstract class HandledScreenMixin<T extends ScreenHandler> extends Screen
         int top = buttonTop();
         boolean hovered = mouseX >= left && mouseX < left + BUTTON_W && mouseY >= top && mouseY < top + BUTTON_H;
         context.fill(left, top, left + BUTTON_W, top + BUTTON_H, hovered ? 0xCC53626D : 0xAA2B343B);
-        context.drawBorder(left, top, BUTTON_W, BUTTON_H, hovered ? 0xFFE8F1F2 : 0xFF7E8A91);
+        int border = hovered ? 0xFFE8F1F2 : 0xFF7E8A91;
+        context.fill(left, top, left + BUTTON_W, top + 1, border);
+        context.fill(left, top + BUTTON_H - 1, left + BUTTON_W, top + BUTTON_H, border);
+        context.fill(left, top, left + 1, top + BUTTON_H, border);
+        context.fill(left + BUTTON_W - 1, top, left + BUTTON_W, top + BUTTON_H, border);
         int textWidth = textRenderer.getWidth(label);
         context.drawTextWithShadow(textRenderer, label, left + (BUTTON_W - textWidth) / 2, top + 3, 0xFFE8F1F2);
     }

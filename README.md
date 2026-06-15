@@ -2,7 +2,7 @@
 
 Your inventory remembers where things belong.
 
-Ghost Slots is a small Fabric client mod for Minecraft 1.20.1. It focuses on slot memory rather than sorting: assigned slots remember the item that belongs there, show a faint icon while empty, and try to receive matching stacks before vanilla inventory movement.
+Ghost Slots is a small Fabric client mod for Minecraft 1.21.11. It focuses on slot memory rather than sorting: assigned slots remember the item that belongs there, show a faint icon while empty, and try to receive matching stacks before vanilla inventory movement.
 
 ## MVP Controls
 
@@ -41,7 +41,7 @@ The mod writes config files under `.minecraft/config/`:
 }
 ```
 
-Builder mode is represented by enabling `fullInventoryGhosting`. Full inventory ghosts use exact item and NBT matching only unless `gearFallback` is also enabled and the ghost item is supported gear.
+Builder mode is represented by enabling `fullInventoryGhosting`. Full inventory ghosts use exact item and component matching only unless `gearFallback` is also enabled and the ghost item is supported gear.
 
 Gear fallback is intentionally narrow:
 
@@ -52,16 +52,16 @@ Gear fallback is intentionally narrow:
 
 ## Build
 
-This project uses Fabric Loom and Gradle.
+This project uses Fabric Loom and the checked-in Gradle wrapper.
 
 ```powershell
-$env:JAVA_HOME='C:\Program Files\Java\jdk-17'
+$env:JAVA_HOME='C:\Program Files\Java\jdk-21'
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
-gradle build
+.\gradlew.bat build
 ```
 
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.1.0.jar
+build/libs/ghost-slots-0.2.0.jar
 ```

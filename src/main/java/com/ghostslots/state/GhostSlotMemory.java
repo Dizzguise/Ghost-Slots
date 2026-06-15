@@ -1,11 +1,14 @@
 package com.ghostslots.state;
 
 import com.ghostslots.config.GhostSlotsConfig;
+import com.mojang.serialization.DataResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
 
 import java.io.IOException;
@@ -46,7 +49,7 @@ public final class GhostSlotMemory {
         if (nbt == null) {
             return Optional.empty();
         }
-        return Optional.of(ItemStack.fromNbt(nbt.copy())).filter(stack -> !stack.isEmpty());
+        return ItemStack.CODEC.parse(NbtOps.INSTANCE, nbt.copy()).result().filter(stack -> !stack.isEmpty());
     }
 
     public void setGhost(int inventoryIndex, ItemStack stack) {
@@ -54,10 +57,15 @@ public final class GhostSlotMemory {
             return;
         }
 
-        ItemStack ghostStack = stack.copy();
-        ghostStack.setCount(1);
-        ghosts.put(inventoryIndex, ghostStack.writeNbt(new NbtCompound()));
-        save();
+        ItemStack ghostStack = stack.copyWithCount(1);
+        DataResult<NbtElement> encoded = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ghostStack);
+        encoded.result()
+                .filter(NbtCompound.class::isInstance)
+                .map(NbtCompound.class::cast)
+                .ifPresent(nbt -> {
+                    ghosts.put(inventoryIndex, nbt);
+                    save();
+                });
     }
 
     public void clearGhost(int inventoryIndex) {
@@ -103,8 +111,8 @@ public final class GhostSlotMemory {
             }
             for (Map.Entry<String, String> entry : store.ghosts.entrySet()) {
                 int index = Integer.parseInt(entry.getKey());
-                NbtCompound nbt = StringNbtReader.parse(entry.getValue());
-                if (index >= 0 && index < 36 && !ItemStack.fromNbt(nbt.copy()).isEmpty()) {
+                NbtCompound nbt = StringNbtReader.readCompound(entry.getValue());
+                if (index >= 0 && index < 36 && ItemStack.CODEC.parse(NbtOps.INSTANCE, nbt.copy()).result().filter(stack -> !stack.isEmpty()).isPresent()) {
                     ghosts.put(index, nbt);
                 }
             }
