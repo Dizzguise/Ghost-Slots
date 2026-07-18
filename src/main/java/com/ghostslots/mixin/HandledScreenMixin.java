@@ -55,8 +55,9 @@ public abstract class HandledScreenMixin<T extends AbstractContainerMenu> extend
         super(title);
     }
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void ghostslots$extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    @Inject(method = "extractContents", at = @At("TAIL"))
+    private void ghostslots$extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+        context.nextStratum();
         renderLocks(context);
         renderButtons(context, mouseX, mouseY);
     }
