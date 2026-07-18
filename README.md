@@ -4,20 +4,28 @@ Your inventory remembers where things belong.
 
 Ghost Slots is a small Fabric client mod for Minecraft 26.2. It focuses on inventory slot memory rather than sorting: assigned slots remember the item that belongs there, show a lock/ghost visual, and try to receive matching stacks before vanilla inventory movement.
 
-## Install
+## Releases
 
-- `ghost-slots-0.2.6-pvp-safe.jar`: release build. Supports hotbar, main inventory, and armor locks.
+- `release-jars/26.2/ghost-slots-0.2.6-pvp-safe.jar`: current Minecraft 26.2 release. Supports hotbar, main inventory, and armor locks.
+- `release-jars/1.21.11/`: archived Minecraft 1.21.11 builds kept for reference and older game profiles.
 
 Install only one Ghost Slots jar at a time.
 
-Checked-in install jars are under `release-jars/26.2/`.
+Do not delete older release folders when adding a new game-version build. They are part of the release history and remain useful for older Minecraft instances.
 
-### CurseForge / Fabric 26.2
+## Install For Minecraft 26.2
 
 1. Create or open a Minecraft Java `26.2` Fabric profile.
 2. Make sure Fabric Loader `0.19.3` or newer is installed in the profile.
-3. Remove any older `ghost-slots-*.jar` files from the profile's `mods` folder.
-4. Copy `ghost-slots-0.2.6-pvp-safe.jar` from `release-jars/26.2/` into the profile's `mods` folder.
+3. Use a launcher/runtime configured for Java 25. Minecraft 26.2 requires Java 25.
+4. Remove any older `ghost-slots-*.jar` files from the profile's `mods` folder.
+5. Copy `ghost-slots-0.2.6-pvp-safe.jar` from `release-jars/26.2/` into the profile's `mods` folder.
+
+## Install For Minecraft 1.21.11
+
+1. Create or open a Minecraft Java `1.21.11` Fabric profile.
+2. Remove any newer `ghost-slots-*.jar` files from the profile's `mods` folder.
+3. Copy exactly one jar from `release-jars/1.21.11/` into the profile's `mods` folder.
 
 ## MVP Controls
 
@@ -69,7 +77,7 @@ Gear fallback is intentionally narrow:
 This project uses Fabric Loom and the checked-in Gradle wrapper.
 
 ```powershell
-$env:JAVA_HOME='C:\Program Files\Java\jdk-21'
+$env:JAVA_HOME='C:\Program Files\Java\jdk-25'
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
 .\gradlew.bat build
 ```
