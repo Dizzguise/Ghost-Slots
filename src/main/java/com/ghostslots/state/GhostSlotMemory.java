@@ -16,19 +16,35 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class GhostSlotMemory {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("ghostslots-memory.json");
+    private static final Path MEMORY_DIR = FabricLoader.getInstance().getConfigDir().resolve("ghostslots-memory");
 
     private final GhostSlotsConfig config;
     private final Map<Integer, CompoundTag> ghosts = new HashMap<>();
+    private String activeContext;
+    private Path activePath;
 
     public GhostSlotMemory(GhostSlotsConfig config) {
         this.config = config;
+    }
+
+    public void activate(String context) {
+        if (Objects.equals(activeContext, context)) {
+            return;
+        }
+
+        ghosts.clear();
+        activeContext = context;
+        activePath = context == null ? null : MEMORY_DIR.resolve(contextFileName(context));
         load();
     }
 
@@ -79,10 +95,10 @@ public final class GhostSlotMemory {
     }
 
     private void load() {
-        if (!Files.exists(PATH)) {
+        if (activePath == null || !Files.exists(activePath)) {
             return;
         }
-        try (Reader reader = Files.newBufferedReader(PATH)) {
+        try (Reader reader = Files.newBufferedReader(activePath)) {
             GhostStore store = GSON.fromJson(reader, GhostStore.class);
             if (store == null || store.ghosts == null) {
                 return;
@@ -101,17 +117,30 @@ public final class GhostSlotMemory {
     }
 
     private void save() {
+        if (activePath == null) {
+            return;
+        }
+
         GhostStore store = new GhostStore();
         for (Map.Entry<Integer, CompoundTag> entry : ghosts.entrySet()) {
             store.ghosts.put(Integer.toString(entry.getKey()), entry.getValue().toString());
         }
 
         try {
-            Files.createDirectories(PATH.getParent());
-            try (Writer writer = Files.newBufferedWriter(PATH)) {
+            Files.createDirectories(activePath.getParent());
+            try (Writer writer = Files.newBufferedWriter(activePath)) {
                 GSON.toJson(store, writer);
             }
         } catch (IOException ignored) {
+        }
+    }
+
+    private static String contextFileName(String context) {
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(context.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(digest) + ".json";
+        } catch (NoSuchAlgorithmException impossible) {
+            throw new IllegalStateException("SHA-256 is unavailable", impossible);
         }
     }
 

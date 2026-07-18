@@ -4,6 +4,7 @@ import com.ghostslots.GhostSlotsClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -110,8 +111,11 @@ public final class PickupRouter {
 
     private static void moveStack(Minecraft client, int sourceIndex, int targetIndex) {
         int syncId = client.player.inventoryMenu.containerId;
-        int sourceSlotId = playerHandlerSlotId(sourceIndex);
-        int targetSlotId = playerHandlerSlotId(targetIndex);
+        int sourceSlotId = playerHandlerSlotId(client, sourceIndex);
+        int targetSlotId = playerHandlerSlotId(client, targetIndex);
+        if (sourceSlotId < 0 || targetSlotId < 0) {
+            return;
+        }
 
         client.gameMode.handleContainerInput(syncId, sourceSlotId, 0, ContainerInput.PICKUP, client.player);
         client.gameMode.handleContainerInput(syncId, targetSlotId, 0, ContainerInput.PICKUP, client.player);
@@ -120,16 +124,14 @@ public final class PickupRouter {
         }
     }
 
-    private static int playerHandlerSlotId(int inventoryIndex) {
-        if (inventoryIndex < 9) {
-            return 36 + inventoryIndex;
+    private static int playerHandlerSlotId(Minecraft client, int inventoryIndex) {
+        Inventory inventory = client.player.getInventory();
+        for (int slotId = 0; slotId < client.player.inventoryMenu.slots.size(); slotId++) {
+            Slot slot = client.player.inventoryMenu.slots.get(slotId);
+            if (slot.container == inventory && slot.getContainerSlot() == inventoryIndex) {
+                return slotId;
+            }
         }
-        if (inventoryIndex < 36) {
-            return inventoryIndex;
-        }
-        if (inventoryIndex < 40) {
-            return 44 - inventoryIndex;
-        }
-        return inventoryIndex;
+        return -1;
     }
 }

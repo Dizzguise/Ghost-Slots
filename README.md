@@ -6,7 +6,7 @@ Ghost Slots is a small Fabric client mod for Minecraft 26.2. It focuses on inven
 
 ## Releases
 
-- `release-jars/26.2/ghost-slots-0.2.6-pvp-safe.jar`: current Minecraft 26.2 release. Supports hotbar, main inventory, and armor locks.
+- `release-jars/26.2/ghost-slots-0.2.7-pvp-safe.jar`: current Minecraft 26.2 release. Supports hotbar, main inventory, and armor locks.
 - `release-jars/1.21.11/`: archived Minecraft 1.21.11 builds kept for reference and older game profiles.
 
 Install only one Ghost Slots jar at a time.
@@ -19,7 +19,7 @@ Do not delete older release folders when adding a new game-version build. They a
 2. Make sure Fabric Loader `0.19.3` or newer is installed in the profile.
 3. Use a launcher/runtime configured for Java 25. Minecraft 26.2 requires Java 25.
 4. Remove any older `ghost-slots-*.jar` files from the profile's `mods` folder.
-5. Copy `ghost-slots-0.2.6-pvp-safe.jar` from `release-jars/26.2/` into the profile's `mods` folder.
+5. Copy `ghost-slots-0.2.7-pvp-safe.jar` from `release-jars/26.2/` into the profile's `mods` folder.
 
 ## Install For Minecraft 1.21.11
 
@@ -54,7 +54,7 @@ Middle-click is not used.
 The mod writes config files under `.minecraft/config/`:
 
 - `ghostslots.json`
-- `ghostslots-memory.json`
+- `ghostslots-memory/` stores separate lock layouts for each single-player world and multiplayer server.
 
 `ghostslots.json` options:
 
@@ -85,7 +85,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.2.6-pvp-safe.jar
+build/libs/ghost-slots-0.2.7-pvp-safe.jar
 ```
 
 There is no alternate release variant.
