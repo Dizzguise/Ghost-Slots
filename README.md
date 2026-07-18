@@ -2,24 +2,22 @@
 
 Your inventory remembers where things belong.
 
-Ghost Slots is a small Fabric client mod for Minecraft 1.21.11. It focuses on inventory slot memory rather than sorting: assigned slots remember the item that belongs there, show a lock/ghost visual, and try to receive matching stacks before vanilla inventory movement.
+Ghost Slots is a small Fabric client mod for Minecraft 26.2. It focuses on inventory slot memory rather than sorting: assigned slots remember the item that belongs there, show a lock/ghost visual, and try to receive matching stacks before vanilla inventory movement.
 
 ## Install
 
-- `ghost-slots-0.2.5-pvp-safe.jar`: default recommended build. Supports hotbar, main inventory, and armor locks. Offhand locking is disabled, so totems are never auto-refilled.
-- `ghost-slots-0.2.5-full-offhand.jar`: full build. Supports hotbar, main inventory, armor, and offhand locks. This can auto-refill totems if a totem is locked in offhand.
+- `ghost-slots-0.2.6-pvp-safe.jar`: release build. Supports hotbar, main inventory, and armor locks.
 
 Install only one Ghost Slots jar at a time.
 
-Checked-in install jars are under `release-jars/1.21.11/`.
+Checked-in install jars are under `release-jars/26.2/`.
 
-### CurseForge / Fabric 1.21.11
+### CurseForge / Fabric 26.2
 
-1. Create or open a Minecraft Java `1.21.11` Fabric profile.
-2. Make sure Fabric API for `1.21.11` is installed in the profile's `mods` folder.
+1. Create or open a Minecraft Java `26.2` Fabric profile.
+2. Make sure Fabric Loader `0.19.3` or newer is installed in the profile.
 3. Remove any older `ghost-slots-*.jar` files from the profile's `mods` folder.
-4. Copy exactly one jar from `release-jars/1.21.11/` into the profile's `mods` folder.
-5. For normal survival/PvP-adjacent use, choose `ghost-slots-0.2.5-pvp-safe.jar`.
+4. Copy `ghost-slots-0.2.6-pvp-safe.jar` from `release-jars/26.2/` into the profile's `mods` folder.
 
 ## MVP Controls
 
@@ -29,14 +27,11 @@ Checked-in install jars are under `release-jars/1.21.11/`.
 - Hold `X` and drag with left mouse across slots to unlock multiple slots.
 - Use the inventory overlay `Unlock All` button to clear every lock.
 
-The full-offhand build also allows the same controls on the offhand slot.
-
 Middle-click is not used.
 
 ## Behavior
 
 - Inventory and armor locking are enabled by default.
-- Offhand locking is only available in the full-offhand build.
 - Empty locked slots render a dim saved-item ghost image.
 - Occupied locked slots render a small lock marker and border.
 - Picked-up items that vanilla placed in a locked slot are moved out unless they match the saved item ID.
@@ -82,11 +77,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:Path"
 The verified jar is produced at:
 
 ```text
-build/libs/ghost-slots-0.2.5-pvp-safe.jar
+build/libs/ghost-slots-0.2.6-pvp-safe.jar
 ```
 
-Build the full offhand variant with:
-
-```powershell
-.\gradlew.bat clean build '-Pghostslots.allowOffhand=true' '-Pghostslots.variant=full-offhand'
-```
+There is no alternate release variant.

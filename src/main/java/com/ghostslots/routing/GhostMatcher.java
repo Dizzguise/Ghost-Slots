@@ -1,10 +1,10 @@
 package com.ghostslots.routing;
 
 import com.ghostslots.config.GhostSlotsConfig;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.Map;
 import java.util.Set;
@@ -45,20 +45,20 @@ public final class GhostMatcher {
         if (ghost.isEmpty() || candidate.isEmpty()) {
             return false;
         }
-        if (ItemStack.areItemsEqual(ghost, candidate)) {
+        if (ItemStack.isSameItem(ghost, candidate)) {
             return true;
         }
         if (!config.gearFallback || !isGearGhost(ghost, config)) {
             return false;
         }
-        if (sameGearType(ghost, candidate, config) && ghost.isOf(candidate.getItem())) {
+        if (sameGearType(ghost, candidate, config) && ghost.is(candidate.getItem())) {
             return true;
         }
         return sameGearType(ghost, candidate, config) && LOWER_TIER.get(ghost.getItem()) == candidate.getItem();
     }
 
     public static boolean exactMatch(ItemStack ghost, ItemStack candidate) {
-        return ItemStack.areItemsAndComponentsEqual(ghost, candidate);
+        return ItemStack.isSameItemSameComponents(ghost, candidate);
     }
 
     private static boolean isGearGhost(ItemStack stack, GhostSlotsConfig config) {

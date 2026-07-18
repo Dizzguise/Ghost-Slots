@@ -1,16 +1,15 @@
 package com.ghostslots.state;
 
-import com.ghostslots.GhostSlotsBuildOptions;
 import com.ghostslots.config.GhostSlotsConfig;
 import com.mojang.serialization.DataResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.world.item.ItemStack;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -26,7 +25,7 @@ public final class GhostSlotMemory {
     private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("ghostslots-memory.json");
 
     private final GhostSlotsConfig config;
-    private final Map<Integer, NbtCompound> ghosts = new HashMap<>();
+    private final Map<Integer, CompoundTag> ghosts = new HashMap<>();
 
     public GhostSlotMemory(GhostSlotsConfig config) {
         this.config = config;
@@ -34,10 +33,7 @@ public final class GhostSlotMemory {
     }
 
     public boolean isGhostableInventoryIndex(int inventoryIndex) {
-        if (inventoryIndex >= 0 && inventoryIndex < 40) {
-            return true;
-        }
-        return inventoryIndex == 40 && GhostSlotsBuildOptions.ALLOW_OFFHAND_LOCKING;
+        return inventoryIndex >= 0 && inventoryIndex < 40;
     }
 
     public boolean hasGhost(int inventoryIndex) {
@@ -45,7 +41,7 @@ public final class GhostSlotMemory {
     }
 
     public Optional<ItemStack> getGhost(int inventoryIndex) {
-        NbtCompound nbt = ghosts.get(inventoryIndex);
+        CompoundTag nbt = ghosts.get(inventoryIndex);
         if (nbt == null) {
             return Optional.empty();
         }
@@ -58,10 +54,10 @@ public final class GhostSlotMemory {
         }
 
         ItemStack ghostStack = stack.copyWithCount(1);
-        DataResult<NbtElement> encoded = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ghostStack);
+        DataResult<Tag> encoded = ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, ghostStack);
         encoded.result()
-                .filter(NbtCompound.class::isInstance)
-                .map(NbtCompound.class::cast)
+                .filter(CompoundTag.class::isInstance)
+                .map(CompoundTag.class::cast)
                 .ifPresent(nbt -> {
                     ghosts.put(inventoryIndex, nbt);
                     save();
@@ -78,7 +74,7 @@ public final class GhostSlotMemory {
         save();
     }
 
-    public Iterable<Map.Entry<Integer, NbtCompound>> entries() {
+    public Iterable<Map.Entry<Integer, CompoundTag>> entries() {
         return ghosts.entrySet();
     }
 
@@ -93,7 +89,7 @@ public final class GhostSlotMemory {
             }
             for (Map.Entry<String, String> entry : store.ghosts.entrySet()) {
                 int index = Integer.parseInt(entry.getKey());
-                NbtCompound nbt = StringNbtReader.readCompound(entry.getValue());
+                CompoundTag nbt = TagParser.parseCompoundFully(entry.getValue());
                 if (isGhostableInventoryIndex(index) && ItemStack.CODEC.parse(NbtOps.INSTANCE, nbt.copy()).result().filter(stack -> !stack.isEmpty()).isPresent()) {
                     ghosts.put(index, nbt);
                 }
@@ -106,7 +102,7 @@ public final class GhostSlotMemory {
 
     private void save() {
         GhostStore store = new GhostStore();
-        for (Map.Entry<Integer, NbtCompound> entry : ghosts.entrySet()) {
+        for (Map.Entry<Integer, CompoundTag> entry : ghosts.entrySet()) {
             store.ghosts.put(Integer.toString(entry.getKey()), entry.getValue().toString());
         }
 
