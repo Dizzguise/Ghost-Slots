@@ -1,7 +1,6 @@
 package com.ghostslots.routing;
 
 import com.ghostslots.GhostSlotsClient;
-import com.ghostslots.ScreenState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
@@ -16,7 +15,7 @@ public final class PickupRouter {
     }
 
     public static void routePlayerInventory(Minecraft client) {
-        if (client.player == null || client.gameMode == null || ScreenState.isScreenOpen() || client.player.containerMenu != client.player.inventoryMenu) {
+        if (client.player == null || client.gameMode == null || client.gui.screen() != null || client.player.containerMenu != client.player.inventoryMenu) {
             return;
         }
         if (cooldownTicks > 0) {

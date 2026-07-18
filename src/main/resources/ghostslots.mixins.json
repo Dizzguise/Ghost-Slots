@@ -4,8 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "HandledScreenMixin",
-    "MinecraftClientMixin",
-    "ScreenMixin"
+    "MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1
